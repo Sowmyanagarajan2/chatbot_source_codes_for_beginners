@@ -1,7 +1,3 @@
-Absolutely, Sowmya! Here's a **clear and beginner-friendly note** on **Chatbots** — covering what they are, how they work, and their **development flow**. You can also use this as training or teaching material.
-
----
-
 # 🤖 Chatbot for Beginners – Notes & Flow
 
 ---
