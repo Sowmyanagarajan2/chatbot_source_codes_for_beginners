@@ -136,4 +136,146 @@ while True:
 * Use **Gradio** or **Flask** to create a simple chatbot web UI.
 
 ---
+**********************************************************************************
+
+---
+
+## 💬 Objective
+
+To create a **text-based chatbot** using your **own training data** (CSV or Excel) that can:
+
+* Understand the user's question
+* Find the most similar question from the dataset
+* Respond with the matching answer
+
+---
+
+## 🧩 Step-by-Step Explanation
+
+### 🔧 Step 0: Install Required Libraries (if not installed)
+
+```python
+# !pip install pandas sklearn nltk
+```
+
+You would run this if the required libraries (`pandas`, `sklearn`, `nltk`) are not already installed in your Python environment.
+
+---
+
+### 📥 Step 1: Load the CSV or Excel File
+
+```python
+import pandas as pd
+data = pd.read_csv('/content/chatbot_data.csv')  # You can also use pd.read_excel()
+```
+
+* `pandas` is used to read data from a CSV file.
+* The file is expected to have **two columns**: `Question` and `Answer`.
+
+---
+
+### 📦 Step 2: Extract Questions and Answers
+
+```python
+questions = data['Question'].values
+answers = data['Answer'].values
+```
+
+* We take the `Question` and `Answer` columns and store them in separate variables.
+* `questions` is a list of questions asked previously.
+* `answers` is a list of their corresponding answers.
+
+---
+
+### 🔡 Step 3: Convert Questions to Numbers (TF-IDF)
+
+```python
+from sklearn.feature_extraction.text import TfidfVectorizer
+vectorizer = TfidfVectorizer()
+question_vectors = vectorizer.fit_transform(questions)
+```
+
+* `TfidfVectorizer()` converts text into **numerical vectors** that represent **importance of words**.
+* Each question becomes a vector of numbers — this is needed for comparison.
+
+---
+
+### 🤖 Step 4: Chatbot Logic – Match User Input
+
+```python
+from sklearn.metrics.pairwise import cosine_similarity
+
+def chatbot_response(user_input):
+    user_vec = vectorizer.transform([user_input])  # Convert user question to vector
+    similarity = cosine_similarity(user_vec, question_vectors)  # Compare with existing Qs
+    index = similarity.argmax()  # Find most similar question
+    confidence = similarity[0][index]  # Similarity score (0 to 1)
+    
+    if confidence > 0.3:  # Threshold to check if it's a good match
+        return answers[index]
+    else:
+        return "Sorry, I don't understand your question."
+```
+
+#### ✨ What's Happening Here:
+
+* Your input is compared with **all questions** in the dataset.
+* The **most similar question** is found.
+* If the match is **above 30%** (similarity > 0.3), the bot gives the corresponding answer.
+* Otherwise, it says: "Sorry, I don't understand your question."
+
+---
+
+### 🗨️ Step 5: Chat Loop
+
+```python
+while True:
+    user_input = input("You: ")
+    if user_input.lower() in ['exit', 'quit', 'bye']:
+        print("Bot: Goodbye!")
+        break
+    response = chatbot_response(user_input)
+    print("Bot:",response)
+```
+
+* A loop to keep the chat going.
+* It stops when you type **exit**, **quit**, or **bye**.
+* Otherwise, it gets the response using the chatbot function and prints it.
+
+---
+
+## ✅ Example
+
+### 📂 CSV File Content:
+
+| Question           | Answer                        |
+| ------------------ | ----------------------------- |
+| What is your name? | I'm ChatBot.                  |
+| How are you?       | I'm good, thank you!          |
+| What can you do?   | I can answer basic questions. |
+
+### 👨‍💻 User Chat:
+
+```
+You: What is your name?
+Bot: I'm ChatBot.
+
+You: What can you do?
+Bot: I can answer basic questions.
+
+You: What's the weather?
+Bot: Sorry, I don't understand your question.
+```
+
+---
+
+## 💡 Concepts You Learned:
+
+* Text preprocessing using **TF-IDF**
+* Text similarity using **Cosine Similarity**
+* Basic chatbot logic in **Python**
+* Using **CSV** as training data
+
+---
+
 
